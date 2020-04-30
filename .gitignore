@@ -1,0 +1,10 @@
+.vscode/
+content/
+complete-responsive/
+UX/
+venv/
+
+src/db.sqlite3
+src/base/__pycache__
+src/accounts/__pycache__
+src/accounts/migrations
