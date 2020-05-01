@@ -1,6 +1,7 @@
-{% include 'base.html' %}
+{% extends 'base.html' %}
+{% load static %}
 
-{% block 'content' %}
+{% block content %}
 <div id="content-main">
 
     <form id='face-register-form' method="post" action="{% url 'signup' %}" enctype="multipart/form-data">
@@ -15,6 +16,7 @@
     <button id="register-button" style="display: none;">Register</button>
 
 </div>
-{% endblock 'content'%}
+
 {% load static %}
 <script type="text/javascript" src="{% static 'authentication/js/register.js' %}"></script>
+{% endblock content %}

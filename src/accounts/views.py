@@ -18,7 +18,8 @@ from accounts.utils import prepare_image
 
 @login_required
 def home(request):
-    return HttpResponse('Worked!')
+    context = {}
+    return render(request, 'accounts/home.html', context)
 
 
 class SignupView(View):
