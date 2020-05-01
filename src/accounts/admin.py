@@ -1,11 +1,11 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from django.utils.translation import ugettext_lazy as _
-
-from .models import User
 # from .forms import CustomUserChangeForm, CustomUserCreationForm
 from django.contrib.auth.models import Group
-from .forms import UserChangeForm, UserCreationForm
+from django.utils.translation import ugettext_lazy as _
+
+from accounts.forms import UserChangeForm, UserCreationForm
+from accounts.models import User, UserFaceImage
 
 
 class CustomUserAdmin(UserAdmin):
@@ -39,4 +39,5 @@ class CustomUserAdmin(UserAdmin):
 
 
 admin.site.register(User, CustomUserAdmin)
+admin.site.register(UserFaceImage)
 admin.site.unregister(Group)

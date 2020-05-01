@@ -1,8 +1,10 @@
 from django import forms
-from django.contrib.auth.forms import ReadOnlyPasswordHashField
-
-from .models import User
+from django.contrib.auth.forms import (AuthenticationForm,
+                                       ReadOnlyPasswordHashField)
 from django.db.models import Q
+
+from .models import User, UserFaceImage
+from .utils import base64_file
 
 
 # Admin form
@@ -54,35 +56,43 @@ class UserChangeForm(forms.ModelForm):
 
 
 # User signup form
-class UserSignupForm(forms.ModelForm):
+class UserSignupForm(UserCreationForm):
+    image = forms.CharField(widget=forms.HiddenInput)
     email = forms.EmailField(max_length=200)
-    password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
-    password2 = forms.CharField(
-        label='Password confirmation', widget=forms.PasswordInput)
 
     class Meta:
         model = User
         fields = ('citizenship_number', 'email', 'first_name',
-                  'last_name')
+                  'last_name', 'password1', 'password2')
 
-    def clean_password2(self):
-        password1 = self.cleaned_data.get('password1')
-        password2 = self.cleaned_data.get('password2')
+    # ========================================
+    # We are inhereting UserCreationForm so we don't clean_password2 because it is already defined in UserCreationForm class.
 
-        if password1 and password2 and password1 != password2:
-            raise forms.ValidationError("Passwords do not match.")
-    
+    # def clean_password2(self):
+    #     password1 = self.cleaned_data.get('password1')
+    #     password2 = self.cleaned_data.get('password2')
+
+    #     if password1 and password2 and password1 != password2:
+    #         raise forms.ValidationError("Passwords do not match.")
+
     def save(self, commit=True):
+        # if not commit:
+        #     raise NotImplementedError(
+        #         "Can't create User and UserFaceImage without database save")
+
         user = super(UserSignupForm, self).save(commit=False)
-        user.set_password(self.cleaned_data['password1'])
 
         if commit:
+            image = base64_file(self.data['image'])
+            face_image = UserFaceImage(user=user, image=image)
+            face_image.save()
             user.save()
         return user
 
 
 # User login form
 class UserLoginForm(forms.Form):
+    image = forms.CharField(widget=forms.HiddenInput())
     citizenship_number = forms.IntegerField(label='Citizenship Number')
     password = forms.CharField(label='Password', widget=forms.PasswordInput)
 
@@ -90,16 +100,20 @@ class UserLoginForm(forms.Form):
         citizenship_number = self.cleaned_data.get('citizenship_number')
         password = self.cleaned_data.get('password')
 
-        user_qs = User.objects.filter(Q(citizenship_number__iexact=citizenship_number)).distinct()
+        user_qs = User.objects.filter(
+            Q(citizenship_number__iexact=citizenship_number)).distinct()
 
         if not user_qs.exists() and user_qs.count() != 1:
-            raise forms.ValidationError("Invalid credentials - user does not exist")
+            raise forms.ValidationError(
+                "Invalid credentials - user does not exist")
 
         user_obj = user_qs.first()
 
         if not user_obj.check_password(password):
             raise forms.ValidationError("Credentials are not correct")
 
-        self.cleaned_data['user_obj'] = user_obj
-
         return super(UserLoginForm, self).clean(*args, **kwargs)
+
+
+class AuthenticationForm(AuthenticationForm):
+    image = forms.CharField(widget=forms.HiddenInput())

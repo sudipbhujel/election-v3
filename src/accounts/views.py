@@ -1,20 +1,22 @@
-from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
+from django.contrib.auth import login, logout
+from django.contrib.auth.decorators import login_required
 from django.contrib.sites.shortcuts import get_current_site
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
+from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.views import View
 
-from .models import User
-from .tokens import account_activation_token
-from .forms import UserSignupForm
-from django.contrib import messages
-from django.template.loader import render_to_string
-from email.message import EmailMessage
-from accounts.forms import UserLoginForm
+from accounts.authenticate import FaceIdAuthBackend
+from accounts.forms import AuthenticationForm, UserLoginForm, UserSignupForm
+from accounts.models import User
+from accounts.tokens import account_activation_token
+from accounts.utils import prepare_image
 
 
+@login_required
 def home(request):
     return HttpResponse('Worked!')
 
@@ -29,27 +31,14 @@ class SignupView(View):
         return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
-        form = self.form_class(request.POST)
+        form = self.form_class(request.POST, request.FILES)
 
         if form.is_valid():
             user = form.save(commit=False)
             user.is_active = False
             user.save()
+            form.save()
             current_site = get_current_site(request)
-
-            # mail_subject = 'Activate your blog account.'
-            # message = render_to_string('acc_active_email.html', {
-            #     'user': user,
-            #     'protocol': 'http',
-            #     'domain': current_site.domain,
-            #     'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-            #     'token': account_activation_token.make_token(user),
-            # })
-            # to_email = form.cleaned_data.get('email')
-            # email = EmailMessage(
-            #     mail_subject, message, to=[to_email]
-            # )
-            # email.send()
 
             subject = 'Activate your Account'
             message = message = render_to_string('acc_active_email.html', {
@@ -96,10 +85,19 @@ class LoginView(View):
         form = self.form_class(request.POST or None, request.FILES or None)
 
         if form.is_valid():
-            user_obj = form.cleaned_data.get('user_obj')
-            login(request, user_obj)
-            messages.success(request, 'You are logged in successfully!')
-            return redirect('home')
+            citizenship_number = form.cleaned_data['citizenship_number']
+            password = form.cleaned_data['password']
+            face_image = prepare_image(form.cleaned_data['image'])
+
+            face_id = FaceIdAuthBackend()
+            user = face_id.authenticate(
+                citizenship_number=citizenship_number, password=password, face_id=face_image)
+            if user is not None:
+                login(request, user)
+                return redirect('home')
+            else:
+                form.add_error(
+                    None, "citizenship number, password or face id didn't match.")
         context = {'form': form}
         return render(request, self.template_name, context)
 

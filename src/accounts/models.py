@@ -108,11 +108,11 @@ class User(AbstractBaseUser, PermissionsMixin):
 def content_file_name(instance, filename):
     timestr = time.strftime("%Y%m%d-%H%M%S")
     name, extension = os.path.splitext(filename)
-    return os.path.join(BASE_DIR, 'accounts', 'content', instance.user.citizenship_number, timestr + extension)
+    return os.path.join('accounts', 'content', str(instance.user.citizenship_number), timestr + extension)
 
 class UserFaceImage(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     image = models.ImageField(upload_to=content_file_name, blank=False)
 
     def __str__(self):
-        return self.user.citizenship_number
+        return str(self.user.citizenship_number)

@@ -1,38 +1,22 @@
 {% include 'base.html' %}
 
 {% block 'content' %}
-<form method="POST">
-  {% comment %} {% endcomment %}
-  {% csrf_token %}
+<div id="content-main">
 
+  <form id='face-login-form' method="post" action="{% url 'login' %}" enctype="multipart/form-data">
+    {% csrf_token %}
 
+    {{ form.as_p }}
 
-  {% for field in form %}
+    <input type="hidden" name="next" value="Next">
+  </form>
 
+  <button id="video-button">Next</button>
+  <video id="screenshot-video" autoplay></video>
+  <button id="login-button" style="display: none;">Login</button>
 
-  {% for error in field.errors %}
-  <div class="alert alert-danger" role="alert">
-    {{ error }}
-  </div>
-  {% endfor %}
-
-
-
-  <p>
-    {{ field.label_tag }}<br>
-    {{ field }}
-    {% comment %} {% if field.help_text %}
-    <small style="display: none">{{ field.help_text }}</small>
-    {% endif %} {% endcomment %}
-    {% comment %} {% for error in field.errors %}
-    <p style="color: red">{{ error }}</p>
-    {% endfor %} {% endcomment %}
-  </p>
-  {% endfor %}
-
-
-
-
-  <button type="submit" class="btn btn-secondary">Login</button>
-</form>
+</div>
 {% endblock 'content' %}
+
+{% load static %}
+<script type="text/javascript" src="{% static 'authentication/js/login.js' %}"></script>
