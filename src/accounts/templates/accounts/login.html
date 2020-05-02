@@ -9,13 +9,21 @@
     <h4 class="login-title">Login</h4>
   </div>
   <div class="citizen-login">
-    <div class="text-center"><img class="w-25 my-2" src="{% static 'images/avatar.svg' %}" />
+    <div class="text-center"><img class="w-25 my-2" src="{% static 'images/avatar-login.svg' %}" style="opacity:0.6;" />
     </div>
 
 
     <div id="content-main">
       <form id='face-login-form' method="post" action="{% url 'login' %}" enctype="multipart/form-data">
         {% csrf_token %}
+
+        {% if form.non_field_errors %}
+        <div class="alert alert-danger" role="alert">
+          {% for error in form.non_field_errors %}
+          {{ error }}
+          {% endfor %}
+        </div>
+        {% endif %} 
 
         {% comment %} {{ form.as_p }} {% endcomment %}
         <input type="number" class="citizen-input form-control" name="citizenship_number" required

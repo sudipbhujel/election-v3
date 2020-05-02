@@ -110,7 +110,7 @@ class UserLoginForm(forms.Form):
         user_obj = user_qs.first()
 
         if not user_obj.check_password(password):
-            raise forms.ValidationError("Credentials are not correct")
+            raise forms.ValidationError("Password isn't correct!")
 
         return super(UserLoginForm, self).clean(*args, **kwargs)
 

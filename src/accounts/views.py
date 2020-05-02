@@ -95,10 +95,11 @@ class LoginView(View):
                 citizenship_number=citizenship_number, password=password, face_id=face_image)
             if user is not None:
                 login(request, user)
+                messages.success(request, 'You are successfully logged in!')
                 return redirect('home')
             else:
                 form.add_error(
-                    None, "citizenship number, password or face id didn't match.")
+                    None, "Your face didn't match.")
         context = {'form': form}
         return render(request, self.template_name, context)
 
