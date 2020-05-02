@@ -2,19 +2,71 @@
 {% load static %}
 
 {% block content %}
-<div id="content-main">
 
-    <form id='face-register-form' method="post" action="{% url 'signup' %}" enctype="multipart/form-data">
-        {% csrf_token %}
+<div class="d-flex flex-column justify-content-center" id="form-box">
+    <div class="box-header">
+        <h4 class="form-header">Sign Up</h4>
+    </div>
+    <div class="form-content">
+        <div class="text-center">
+            <img class="w-25 my-2" src="{% static 'images/avatar-login.svg' %}" style="opacity: 0.60;" />
+        </div>
 
-        {{ form }}
+        <div id="content-main">
+            <form id='face-register-form' method="post" action="{% url 'signup' %}" enctype="multipart/form-data">
+                {% csrf_token %}
 
-    </form>
+                <p class="text-center" style="color: #8b8b8b;"><strong style="color:red;">*</strong> All the fields are required.</p>
 
-    <button id="video-button">Next</button>
-    <video id="screenshot-video" autoplay></video>
-    <button id="register-button" style="display: none;">Register</button>
+                {% for field in form %}
+                {% for error in field.errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+                {% endfor %}
+                {% endfor %}
 
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger" role="alert">
+                    {% for error in form.non_field_errors %}
+                    {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+                
+                <input type="number" class="form-input form-control" name="citizenship_number" style="margin-top: 10px;"
+                    required placeholder="Citizenship Number" />
+                <input type="text" class="form-input form-control" name="first_name" style="margin-top: 10px;" required
+                    placeholder="First Name" />
+                <input type="text" class="form-input form-control" name="last_name" style="margin-top: 10px;" required
+                    placeholder="Last Name" />
+                <input type="email" class="form-input form-control" name="email" style="margin-top: 10px;" required
+                    placeholder="Email Address" />
+                <input type="password" class="form-input form-control" name="password1" style="margin-top: 10px;"
+                    required placeholder="Password" />
+                <input type="password" class="form-input form-control" name="password2" style="margin-top: 10px;"
+                    required placeholder="Password Confirmation" />
+
+                <input type="hidden" name="image" id="id_image">
+
+                <input type="hidden" name="next" value="Next">
+
+            </form>
+
+            <div class="submit-row">
+                <button class="submit-button btn btn-block box-shadow" id="video-button">Next</button>
+            </div>
+            <div id="video-div" style="height: 0px">
+                <video id="screenshot-video" autoplay></video>
+            </div>
+            <button class="submit-button btn btn-block box-shadow" id="register-button"
+                style="display: none;">Register</button>
+
+        </div>
+        <div id="form-box-footer">
+            <p>Do you have an account?<a id="form-link" href="{% url 'login' %}">Log In</a></p>
+        </div>
+    </div>
 </div>
 
 {% load static %}

@@ -9,8 +9,8 @@ body {
     color: #000000;
 }
 
-/* Login */
-#login-box {
+/* Login Form and Sign Up form*/
+#form-box {
     max-width: 680px;
     margin: 0 auto;
     margin-top: 25px !important;
@@ -22,76 +22,31 @@ body {
     box-shadow: 0px 6px 30px rgba(0, 0, 0, 0.2);
 }
 
-.login-box-header {
+.box-header {
     background-color: rgb(255, 255, 255);
     text-align: center;
     padding-top: 18px;
     padding-right: 25px;
     padding-bottom: 15px;
     padding-left: 25px;
-}
-
-.login-box-header {
+    border-bottom: 1px solid rgb(224, 224, 224);
     border: none;
     border-bottom: 1px solid rgb(224, 224, 224);
 }
 
-.login-box-content {
+.form-header {
+    color: rgb(139, 139, 139);
+    margin-bottom: 0px;
+    font-weight: 400;
+    font-size: 27px;
+}
+
+.form-content {
     padding: 10px 20px;
     background-color: #ffffff;
-    padding-top: 20px;
 }
 
-.social-login-link {
-    text-decoration: none;
-    color: white;
-    margin-top: 10px;
-}
-
-.fb-login {
-    background-color: #1a538a;
-}
-
-.gp-login {
-    background-color: #db4437;
-    margin-top: 10px;
-}
-
-.login-box-content i {
-    padding: 11px 0px 11px 15px;
-    color: white;
-    padding-right: 20px;
-    padding-left: 20px;
-    font-size: 18px;
-}
-
-.box-shadow {
-    box-shadow: 0 2px 2px 0 rgba(41, 48, 59, .24), 0 0 2px 0 rgba(41, 48, 59, .12);
-    border-radius: 5px;
-}
-
-.social-login-link:hover {
-    text-decoration: none;
-    color: white;
-}
-
-.login-box-seperator {
-    flex: 1 0 auto;
-    min-width: 1px;
-    border-top: 1px solid #dedfe0;
-    height: 1px;
-}
-
-.citizen-input {
-    border-radius: 5px;
-    color: #29303b;
-    font-size: 18px;
-    height: auto;
-    padding: 11px 10px 12px 40px;
-    margin-top: 10px;
-}
-
-.password-input{
+.form-input {
     border-radius: 5px;
     color: #29303b;
     font-size: 18px;
@@ -107,13 +62,20 @@ body {
     transition: border-color .08s ease-in-out, box-shadow .08s ease-in-out;
 }
 
-.citizen-login {
-    padding: 10px 20px;
-    background-color: #ffffff;
+.box-shadow {
+    box-shadow: 0 2px 2px 0 rgba(41, 48, 59, .24), 0 0 2px 0 rgba(41, 48, 59, .12);
+    border-radius: 5px;
+}
+
+.submit-row {
+    /* padding: 10px 20px; */
+    text-align: center;
+    margin-bottom: 8px;
+    padding: 10px 0;
 }
 
 .submit-button {
-    margin-top: 0px;
+    margin-top: 10px;
     height: 46px;
     background-color: rgb(26, 138, 111);
     border: 0;
@@ -123,15 +85,8 @@ body {
     padding-bottom: 0px;
 }
 
-.submit-row {
-    padding: 10px 20px;
-    text-align: center;
-    margin-bottom: 8px;
-    padding-top: 10px;
-}
-
-.label-text {
-    color: #8b8b8b;
+.submit-button:hover {
+    background-color: rgb(25, 130, 105);
 }
 
 #forgot-password-link {
@@ -139,7 +94,13 @@ body {
     text-decoration: none;
 }
 
-#login-box-footer {
+#form-link {
+    color: #2474c1;
+    padding: 0px 10px;
+    text-decoration: none;
+}
+
+#form-box-footer {
     text-align: center;
     border-top: 1px solid #dedfe0;
     padding: 10px 20px;
@@ -147,26 +108,7 @@ body {
     padding-top: 18px;
 }
 
-#register-link {
-    color: #2474c1;
-    padding: 0px 10px;
-    text-decoration: none;
-}
-
-#login-box-footer p {
+#form-box-footer p {
     color: #8b8b8b;
-    margin-bottom:0px;
-}
-
-#submit-id-submit:hover {
-    background-color: rgb(25, 130, 105);
-}
-
-
-/*  */
-.login-title {
-    color: rgb(139, 139, 139);
     margin-bottom: 0px;
-    font-weight: 400;
-    font-size: 27px;
 }
