@@ -11,7 +11,3 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('activate/<uidb64>/<token>/', views.activate, name='activate'),
 ]
-
-if settings.DEBUG:
-    urlpatterns += static(settings.STATIC_URL,
-                          document_root=settings.STATIC_ROOT)

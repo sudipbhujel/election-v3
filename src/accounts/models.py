@@ -1,17 +1,18 @@
+from base.settings import BASE_DIR
 import os
 import time
 
 from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager,
                                         PermissionsMixin)
+from django.core.files.storage import FileSystemStorage
 from django.core.mail import send_mail
 from django.db import models
 from django.utils import timezone
 from django.utils.http import urlquote
 from django.utils.translation import ugettext_lazy as _
 
-from base.settings import BASE_DIR
 
-
+# Custom User Manager
 class UserManager(BaseUserManager):
 
     def _create_user(self, citizenship_number, email, password, is_staff, is_superuser, **extra_fields):
@@ -40,6 +41,20 @@ class UserManager(BaseUserManager):
                                  **extra_fields)
 
 
+# Profile Image name
+location = os.path.join(BASE_DIR, 'accounts')
+upload_storage = FileSystemStorage(location=location, base_url='/accounts')
+
+def pp_location(instance, filename):
+    """
+    Rename image name to a timestamp and saves to profiles/citizenship_number directory .
+    """
+    timestr = time.strftime("%Y%m%d-%H%M%S")
+    name, extension = os.path.splitext(filename)
+    return os.path.join('uploads', str(instance.citizenship_number), 'avatar', timestr + extension)
+
+
+# Custom User
 class User(AbstractBaseUser, PermissionsMixin):
     """
     A fully featured User model with admin-compliant permissions that uses
@@ -52,10 +67,12 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(_('email address'), max_length=254, unique=True)
     first_name = models.CharField(_('first name'), max_length=30, blank=True)
     last_name = models.CharField(_('last name'), max_length=30, blank=True)
+    profile_image = models.ImageField(
+        _('profile image'), upload_to=pp_location, storage=upload_storage, blank=True, help_text=_('Profile picture'))
 
     # Roles
     is_staff = models.BooleanField(_('staff status'), default=False,
-                                   help_text=_('Designates whether the user can log into this admin '
+                                   help_text=_('Designates whether the user can log into this admin'
                                                'site.'))
     is_active = models.BooleanField(_('active'), default=True,
                                     help_text=_('Designates whether this user should be treated as '
@@ -79,7 +96,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     class Meta:
         verbose_name = _('user')
         verbose_name_plural = _('users')
-    
+
     def __str__(self):
         return self.email
 
@@ -105,14 +122,16 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 # UserFaceImage
-def content_file_name(instance, filename):
+def face_location(instance, filename):
     timestr = time.strftime("%Y%m%d-%H%M%S")
     name, extension = os.path.splitext(filename)
-    return os.path.join('accounts', 'content', str(instance.user.citizenship_number), timestr + extension)
+    return os.path.join('uploads', str(instance.user.citizenship_number), 'face', timestr + extension)
+
 
 class UserFaceImage(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    image = models.ImageField(upload_to=content_file_name, blank=False)
+    image = models.ImageField(
+        _('face image'), upload_to=face_location, storage=upload_storage, blank=False)
 
     def __str__(self):
         return str(self.user.citizenship_number)
