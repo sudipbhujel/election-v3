@@ -45,16 +45,29 @@ class UserManager(BaseUserManager):
 location = os.path.join(BASE_DIR, 'accounts')
 upload_storage = FileSystemStorage(location=location, base_url='/accounts')
 
+
 def pp_location(instance, filename):
     """
-    Rename image name to a timestamp and saves to profiles/citizenship_number directory .
+    Rename image name to a timestamp and saves to uploads/citizenship_number/avatar/timestamp directory .
     """
     timestr = time.strftime("%Y%m%d-%H%M%S")
     name, extension = os.path.splitext(filename)
     return os.path.join('uploads', str(instance.citizenship_number), 'avatar', timestr + extension)
 
+# Citizenship location and rename
+
+
+def citizenship_location(instance, filename):
+    """
+    Rename image name to a timestamp and saves to uploads/citizenship_number/avatar/timestamp directory .
+    """
+    timestr = time.strftime("%Y%m%d-%H%M%S")
+    name, extension = os.path.splitext(filename)
+    return os.path.join('uploads', str(instance.citizenship_number), 'citizenship', timestr + extension)
 
 # Custom User
+
+
 class User(AbstractBaseUser, PermissionsMixin):
     """
     A fully featured User model with admin-compliant permissions that uses
@@ -62,13 +75,65 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     Citizenship Number, Email and password are required. Other fields are optional.
     """
+    GENDER_CHOICES = (
+        ('male', 'Male'),
+        ('female', 'Female'),
+        ('others', 'Others')
+    )
+
+    PROVINCE_CHOICES = (
+        ('1', '1'),
+        ('2', '2'),
+        ('3', '3'),
+        ('4', '4'),
+        ('5', '5'),
+        ('6', '6'),
+    )
+
+    ZONE_CHOICES = (
+        ('janakpur', 'Janakpur'),
+        ('bagmati', 'Bagmati')
+    )
+
+    DISTRICT_CHOICES = (
+        ('dolakha', 'Dolakha'),
+        ('bhaktapur', 'Bhaktapur'),
+        ('kathmandu', 'Kathmandu'),
+        ('lalitpur', 'Lalitpur')
+    )
+
+    # Profile Information
     citizenship_number = models.IntegerField(
         _('citizenship number'), unique=True)
     email = models.EmailField(_('email address'), max_length=254, unique=True)
     first_name = models.CharField(_('first name'), max_length=30, blank=True)
+    middle_name = models.CharField(_('middle name'), max_length=30, blank=True)
     last_name = models.CharField(_('last name'), max_length=30, blank=True)
+    father_name = models.CharField(
+        _('father\'s name'), max_length=30, blank=True)
+    mother_name = models.CharField(
+        _('mother\'s name'), max_length=30, blank=True)
+    dob = models.DateField(_('date of birth'), blank=True, null=True)
+    gender = models.CharField(_('gender'), blank=True,
+                              max_length=15, choices=GENDER_CHOICES)
+    citizenship_issued_district = models.CharField(
+        _('citizenship issued district'), max_length=15, blank=True, choices=DISTRICT_CHOICES)
+
     profile_image = models.ImageField(
         _('profile image'), upload_to=pp_location, storage=upload_storage, blank=True, help_text=_('Profile picture'))
+    citizenship = models.ImageField(
+        _('Citizenship image'), upload_to=citizenship_location, storage=upload_storage, blank=True, help_text=_('Citizenship photo'))
+
+    # Address Information
+    state = models.CharField(
+        _('province number'), max_length=15, blank=True, choices=PROVINCE_CHOICES)
+    zone = models.CharField(
+        _('zone'), max_length=15, blank=True, choices=ZONE_CHOICES)
+    district = models.CharField(
+        _('district'), max_length=15, blank=True, choices=DISTRICT_CHOICES)
+    muncipality = models.CharField(_('muncipality'), max_length=30, blank=True)
+    ward_number = models.IntegerField(_('ward number'), blank=True, null=True)
+    tole = models.CharField(_('tole'), max_length=30, blank=True)
 
     # Roles
     is_staff = models.BooleanField(_('staff status'), default=False,
@@ -123,6 +188,9 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 # UserFaceImage
 def face_location(instance, filename):
+    """
+    Rename image name to a timestamp and saves to uploads/citizenship_number/face/timestamp directory .
+    """
     timestr = time.strftime("%Y%m%d-%H%M%S")
     name, extension = os.path.splitext(filename)
     return os.path.join('uploads', str(instance.user.citizenship_number), 'face', timestr + extension)

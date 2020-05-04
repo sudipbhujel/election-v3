@@ -16,7 +16,12 @@ class CustomUserAdmin(UserAdmin):
     # that reference the removed 'username' field
     fieldsets = (
         (None, {'fields': ('citizenship_number', 'email', 'password')}),
-        (_('Personal info'), {'fields': ('first_name', 'last_name', 'profile_image')}),
+        (_('Personal info'), {'fields': ('first_name', 'middle_name', 'last_name', 
+                                        'father_name', 'mother_name', 'dob', 'gender', 
+                                        'citizenship_issued_district', 'profile_image', 
+                                        'citizenship')}),
+        (_('Address info'), {'fields': ('state', 'zone', 'district', 'muncipality', 
+                                        'ward_number', 'tole')}),
         (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser', 'is_voter',
                                        'is_candidate', 'is_verified_candidate',
                                        'user_permissions')}),
