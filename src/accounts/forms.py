@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import (AuthenticationForm,
+from django.contrib.auth.forms import (AuthenticationForm, PasswordChangeForm,
                                        ReadOnlyPasswordHashField)
 from django.db.models import Q
 
@@ -115,5 +115,12 @@ class UserLoginForm(forms.Form):
         return super(UserLoginForm, self).clean(*args, **kwargs)
 
 
+# Authentication form
 class AuthenticationForm(AuthenticationForm):
     image = forms.CharField(widget=forms.HiddenInput())
+
+# Password change form
+class PasswordChangeForm(PasswordChangeForm):
+    class Meta:
+        model = User
+        fields = ('old_password', 'new_password1', 'new_password2')
