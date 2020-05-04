@@ -10,7 +10,8 @@ from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.views import View
 
 from accounts.authenticate import FaceIdAuthBackend
-from accounts.forms import AuthenticationForm, UserLoginForm, UserSignupForm
+from accounts.forms import (AuthenticationForm, PasswordChangeForm,
+                            UserLoginForm, UserSignupForm)
 from accounts.models import User
 from accounts.tokens import account_activation_token
 from accounts.utils import prepare_image
@@ -108,3 +109,40 @@ def logout_view(request):
     logout(request)
     messages.success(request, 'You are logged out successfully!')
     return redirect('login')
+
+
+@login_required
+def password_change_view(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(data=request.POST, user=request.user)
+        
+        if form.is_valid():
+            form.save()
+            print(form)
+            messages.success(request, 'You have changed your password...')
+            return redirect('home')
+    
+    else:
+        form = PasswordChangeForm(user=request.user)
+
+    context = {'form': form}
+
+    return render(request, 'accounts/password_change.html', context)
+
+# class PasswordChangeView(View):
+#     form_class = PasswordChangeForm
+#     template_name = 'accounts/password_change.html'
+
+#     def get(self, request, *args, **kwargs):
+#         form = self.form_class(user=request.user)
+#         context = {'form': form}
+#         return render(request, self.template_name, context)
+    
+#     def post(self, request, *args, **kwargs):
+#         form = self.form_class(data=request.POST, user=request.user)
+        
+#         if form.is_valid():
+#             messages.success(request, 'You have Changed Your Password...')
+#             return redirect('home')
+#         context = {'form': form}
+#         return render(request, self.template_name, context)
