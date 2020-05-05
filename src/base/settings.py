@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'accounts.apps.AccountsConfig',
+    'election.apps.ElectionConfig',
 ]
 
 MIDDLEWARE = [
@@ -56,7 +57,11 @@ ROOT_URLCONF = 'base.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            os.path.join(BASE_DIR, 'accounts/templates'),
+            os.path.join(BASE_DIR, 'base/templates'),
+            os.path.join(BASE_DIR, 'election/templates')
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

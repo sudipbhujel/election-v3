@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+
+<div id="form-box-form" class="d-flex flex-column justify-content-center">
+    <div class="box-header">
+        <h4 class="form-header">Election form</h4>
+    </div>
+    <div class="form-content">
+        <div class="text-center"></div>
+        <div class="content-main">
+            <div class="text-center">
+                <h4 class="form-sub-header">Personal Information</h4>
+            </div>
+            <hr />
+
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                {% for field in form %}
+                {% for error in field.errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+                {% endfor %}
+                {% endfor %}
+
+
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger" role="alert">
+                    {% for error in form.non_field_errors %}
+                    {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                {% comment %} {{ form.as_p }} {% endcomment %}
+
+                <div class="row mr-2">
+                    <div class="col-sm-6">
+                        <div class="form-group row h-100">
+                            <label class="col-sm-4 my-auto pr-2">First Name</label>
+                            <div class="col-sm-8 form-input-div">
+                            <input type="text" class="form-input form-control"
+                                    name="first_name" required placeholder="First Name" value={{ user.first_name }}>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group row h-100">
+                            <label class="col-sm-4 my-auto pr-2">Middle Name</label>
+                            <div class="col-sm-8 form-input-div">
+                            <input type="text" class="form-input form-control"
+                                    name="middle_name" placeholder="Middle Name" value={{ user.middle_name }}>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mr-2">
+                    <div class="col-sm-6">
+                        <div class="form-group row h-100">
+                            <label class="col-sm-4 my-auto pr-2">Last Name</label>
+                            <div class="col-sm-8 form-input-div">
+                                <input type="text" class="form-input form-control" name="last_name" required
+                                    placeholder="Last Name" value={{ user.last_name }}>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group row h-100">
+                            <label class="col-sm-4 my-auto pr-2">Father&#39;s Name</label>
+                            <div class="col-sm-8 form-input-div">
+                                <input type="text" class="form-input form-control" name="father_name" required
+                                    placeholder="Father&#39;s Name" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mr-2">
+                    <div class="col-sm-6">
+                        <div class="form-group row h-100">
+                            <label class="col-sm-4 my-auto pr-2">Mother&#39;s Name</label>
+                            <div class="col-sm-8 form-input-div">
+                                <input type="text" class="form-input form-control" name="mother_name" required
+                                    placeholder="Mother&#39;s Name" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group row h-100">
+                            <label class="col-sm-4 my-auto pr-2">Date of birth</label>
+                            <div class="col-sm-8 form-input-div">
+                                <input type="date" class="form-input form-control" name="dob" required />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mr-2">
+                    <div class="col-sm-6">
+                        <div class="form-group row h-100">
+                            <label class="col-sm-4 my-auto pr-2">Gender</label>
+                            <div class="col-sm-8 form-input-div">
+                                <select name="gender" class="form-control">
+                                    <option value="" selected disabled hidden>Choose here</option>
+                                    {% for key, gender in genders.items %}
+                                    <option value="{{ key }}">{{ gender }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group row h-100">
+                            <label class="col-sm-4 my-auto pr-2">Citizenship Issued District</label>
+                            <div class="col-sm-8 form-input-div">
+                                <select name="citizenship_issued_district" class="form-control">
+                                    <option value="" selected disabled hidden>Choose here</option>
+                                    {% for key, district in districts.items %}
+                                    <option value="{{ key }}">{{ district }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {% comment %} <div class="row mr-2">
+                    <div class="col-sm-6">
+                        <div class="form-group row h-100">
+                            <label class="col-sm-4 my-auto pr-2">Citizenship Number</label>
+                            <div class="col-sm-8 form-input-div">
+                               <input type="number" class="form-input form-control" name="citizenship_number" required
+                                    placeholder="Citizenship Number" />
+                            </div>
+                        </div>
+                    </div>
+                </div> {% endcomment %}
+
+                {% comment %} <div class="form-group row mb-2 pr-1 h-100">
+                    <label class="col-sm-3 my-auto">Profile picture</label>
+                    <div class="col-sm-8">
+                        <input type="file" class="form-control-file" name="avatar" required />
+                    </div>
+                </div> {% endcomment %}
+                <div class="form-group row mb-2 pr-1 h-100">
+                    <label class="col-sm-3 my-auto">Citizenship</label>
+                    <div class="col-sm-8">
+                        <input type="file" class="form-control-file" name="citizenship" accept="image/*" required />
+                    </div>
+                </div>
+                <hr />
+                <div class="text-center">
+                    <h4 class="form-sub-header">Address Details</h4>
+                </div>
+                <hr />
+                <div class="row mr-2">
+                    <div class="col-sm-6">
+                        <div class="form-group row h-100">
+                            <label class="col-sm-4 my-auto pr-2">Province</label>
+                            <div class="col-sm-8 form-input-div">
+                                <select name="province" class="form-control">
+                                    <option value="" selected disabled hidden>Choose here</option>
+                                    {% for key, province in provinces.items %}
+                                    <option value="{{ key }}">{{ province }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group row h-100">
+                            <label class="col-sm-4 my-auto pr-2">District</label>
+                            <div class="col-sm-8 form-input-div">
+                                <select name="district" class="form-control">
+                                    <option value="" selected disabled hidden>Choose here</option>
+                                    {% for key, district in districts.items %}
+                                    <option value="{{ key }}">{{ district }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mr-2">
+                    <div class="col-sm-6">
+                        <div class="form-group row h-100">
+                            <label class="col-sm-4 my-auto pr-2">Muncipality</label>
+                            <div class="col-sm-8 form-input-div">
+                                <input type="text" class="form-input form-control" name="muncipality" required
+                                    placeholder="Muncipality" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group row h-100">
+                            <label class="col-sm-4 my-auto pr-2">Ward no.</label>
+                            <div class="col-sm-8 form-input-div">
+                                <input type="number" class="form-input form-control" name="ward" required
+                                    placeholder="Ward Number" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mr-2">
+                    <div class="col-sm-6">
+                        <div class="form-group row h-100">
+                            <label class="col-sm-4 my-auto pr-2">Tole</label>
+                            <div class="col-sm-8 form-input-div">
+                                <input type="text" class="form-input form-control" name="tole" required
+                                    placeholder="Tole" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <button class="submit-button btn box-shadow px-5">Submit</button>
+                </div>
+
+
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

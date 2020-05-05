@@ -9,3 +9,7 @@ src/base/__pycache__
 src/accounts/__pycache__
 src/accounts/migrations
 src/accounts/uploads
+
+src/election/__pycache__
+src/election/migrations
+src/election/uploads

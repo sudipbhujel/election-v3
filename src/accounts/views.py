@@ -97,7 +97,7 @@ class LoginView(View):
             if user is not None:
                 login(request, user)
                 messages.success(request, 'You are successfully logged in!')
-                return redirect('home')
+                return redirect('accounts:home')
             else:
                 form.add_error(
                     None, "Your face didn't match.")
@@ -108,7 +108,7 @@ class LoginView(View):
 def logout_view(request):
     logout(request)
     messages.success(request, 'You are logged out successfully!')
-    return redirect('login')
+    return redirect('accounts:login')
 
 
 @login_required
@@ -120,7 +120,7 @@ def password_change_view(request):
             form.save()
             print(form)
             messages.success(request, 'You have changed your password...')
-            return redirect('home')
+            return redirect('accounts:home')
     
     else:
         form = PasswordChangeForm(user=request.user)

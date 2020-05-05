@@ -8,6 +8,7 @@ from base import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('accounts.urls')),
+    path('election/', include('election.urls'))
 ]
 
 if settings.DEBUG:

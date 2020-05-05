@@ -14,7 +14,7 @@
 
 
     <div id="content-main">
-      <form id='face-login-form' method="post" action="{% url 'login' %}" enctype="multipart/form-data">
+      <form id='face-login-form' method="post" action="{% url 'accounts:login' %}" enctype="multipart/form-data">
         {% csrf_token %}
 
         {% for field in form %}
@@ -54,12 +54,12 @@
 
     </div>
     <div class="text-center">
-      <a id="forgot-password-link" href="{% url 'signup' %}">Forgot Password?</a>
+      <a id="forgot-password-link" href="{% url 'accounts:signup' %}">Forgot Password?</a>
     </div>
   </div>
 
   <div id="form-box-footer">
-    <p>Don&#39;t you have an account?<a id="form-link" href="{% url 'signup' %}">Sign Up!</a></p>
+    <p>Don&#39;t you have an account?<a id="form-link" href="{% url 'accounts:signup' %}">Sign Up!</a></p>
   </div>
 </div>
 
