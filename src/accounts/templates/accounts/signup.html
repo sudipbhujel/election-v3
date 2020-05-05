@@ -13,7 +13,7 @@
         </div>
 
         <div id="content-main">
-            <form id='face-register-form' method="post" action="{% url 'signup' %}" enctype="multipart/form-data">
+            <form id='face-register-form' method="post" action="{% url 'accounts:signup' %}" enctype="multipart/form-data">
                 {% csrf_token %}
 
                 <p class="text-center" style="color: #8b8b8b;"><strong style="color:red;">*</strong> All the fields are required.</p>
@@ -64,7 +64,7 @@
 
         </div>
         <div id="form-box-footer">
-            <p>Do you have an account?<a id="form-link" href="{% url 'login' %}">Log In</a></p>
+            <p>Do you have an account?<a id="form-link" href="{% url 'accounts:login' %}">Log In</a></p>
         </div>
     </div>
 </div>

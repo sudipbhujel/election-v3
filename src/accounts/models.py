@@ -41,11 +41,12 @@ class UserManager(BaseUserManager):
                                  **extra_fields)
 
 
-# Profile Image name
+# Custom File System Storage
 location = os.path.join(BASE_DIR, 'accounts')
-upload_storage = FileSystemStorage(location=location, base_url='/accounts')
+upload_storage = FileSystemStorage(location=location, base_url='/media')
 
 
+# Profile picture rename and location
 def pp_location(instance, filename):
     """
     Rename image name to a timestamp and saves to uploads/citizenship_number/avatar/timestamp directory .
@@ -54,53 +55,15 @@ def pp_location(instance, filename):
     name, extension = os.path.splitext(filename)
     return os.path.join('uploads', str(instance.citizenship_number), 'avatar', timestr + extension)
 
-# Citizenship location and rename
-
-
-def citizenship_location(instance, filename):
-    """
-    Rename image name to a timestamp and saves to uploads/citizenship_number/avatar/timestamp directory .
-    """
-    timestr = time.strftime("%Y%m%d-%H%M%S")
-    name, extension = os.path.splitext(filename)
-    return os.path.join('uploads', str(instance.citizenship_number), 'citizenship', timestr + extension)
 
 # Custom User
-
-
 class User(AbstractBaseUser, PermissionsMixin):
     """
     A fully featured User model with admin-compliant permissions that uses
-    a full-length email field as the username.
+    a full-length citizenship_number field as the username.
 
     Citizenship Number, Email and password are required. Other fields are optional.
     """
-    GENDER_CHOICES = (
-        ('male', 'Male'),
-        ('female', 'Female'),
-        ('others', 'Others')
-    )
-
-    PROVINCE_CHOICES = (
-        ('1', '1'),
-        ('2', '2'),
-        ('3', '3'),
-        ('4', '4'),
-        ('5', '5'),
-        ('6', '6'),
-    )
-
-    ZONE_CHOICES = (
-        ('janakpur', 'Janakpur'),
-        ('bagmati', 'Bagmati')
-    )
-
-    DISTRICT_CHOICES = (
-        ('dolakha', 'Dolakha'),
-        ('bhaktapur', 'Bhaktapur'),
-        ('kathmandu', 'Kathmandu'),
-        ('lalitpur', 'Lalitpur')
-    )
 
     # Profile Information
     citizenship_number = models.IntegerField(
@@ -109,31 +72,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(_('first name'), max_length=30, blank=True)
     middle_name = models.CharField(_('middle name'), max_length=30, blank=True)
     last_name = models.CharField(_('last name'), max_length=30, blank=True)
-    father_name = models.CharField(
-        _('father\'s name'), max_length=30, blank=True)
-    mother_name = models.CharField(
-        _('mother\'s name'), max_length=30, blank=True)
-    dob = models.DateField(_('date of birth'), blank=True, null=True)
-    gender = models.CharField(_('gender'), blank=True,
-                              max_length=15, choices=GENDER_CHOICES)
-    citizenship_issued_district = models.CharField(
-        _('citizenship issued district'), max_length=15, blank=True, choices=DISTRICT_CHOICES)
-
-    profile_image = models.ImageField(
-        _('profile image'), upload_to=pp_location, storage=upload_storage, blank=True, help_text=_('Profile picture'))
-    citizenship = models.ImageField(
-        _('Citizenship image'), upload_to=citizenship_location, storage=upload_storage, blank=True, help_text=_('Citizenship photo'))
-
-    # Address Information
-    state = models.CharField(
-        _('province number'), max_length=15, blank=True, choices=PROVINCE_CHOICES)
-    zone = models.CharField(
-        _('zone'), max_length=15, blank=True, choices=ZONE_CHOICES)
-    district = models.CharField(
-        _('district'), max_length=15, blank=True, choices=DISTRICT_CHOICES)
-    muncipality = models.CharField(_('muncipality'), max_length=30, blank=True)
-    ward_number = models.IntegerField(_('ward number'), blank=True, null=True)
-    tole = models.CharField(_('tole'), max_length=30, blank=True)
+    avatar = models.ImageField(
+        _('profile picture'), upload_to=pp_location, storage=upload_storage, blank=True, help_text=_('Profile picture'))
 
     # Roles
     is_staff = models.BooleanField(_('staff status'), default=False,
@@ -150,6 +90,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_verified_candidate = models.BooleanField(_('verified candidate'), default=False,
                                                 help_text=_(''))
 
+    # Election form
+    is_form_filled = models.BooleanField(_('form filled'), default=False,
+                                         help_text=_('Designates whether the user filled election form.'))
+
     # Important dates
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
 
@@ -163,11 +107,13 @@ class User(AbstractBaseUser, PermissionsMixin):
         verbose_name_plural = _('users')
 
     def __str__(self):
-        return self.email
+        return str(self.citizenship_number)
 
+    @property
     def get_absolute_url(self):
         return "/users/%s/" % urlquote(self.email)
 
+    @property
     def get_full_name(self):
         """
         Returns the first_name plus the last_name, with a space in between.
@@ -175,6 +121,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         full_name = '%s %s' % (self.first_name, self.last_name)
         return full_name.strip()
 
+    @property
     def get_short_name(self):
         "Returns the short name for the user."
         return self.first_name
@@ -197,6 +144,9 @@ def face_location(instance, filename):
 
 
 class UserFaceImage(models.Model):
+    """
+    A face model stores user face image for face identification.
+    """
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     image = models.ImageField(
         _('face image'), upload_to=face_location, storage=upload_storage, blank=False)

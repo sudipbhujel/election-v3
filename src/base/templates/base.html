@@ -23,7 +23,7 @@
 
   <div class="container pl-0">
     <nav class="navbar navbar-expand-sm navbar-light bg-transparent">
-      <a class="navbar-brand" href="{% url 'home' %}"><img src="{% static 'images/brand-logo.svg' %}"
+      <a class="navbar-brand" href="{% url 'accounts:home' %}"><img src="{% static 'images/brand-logo.svg' %}"
           alt="Election"></a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
         aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,16 +33,16 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav ml-auto">
           <li class="nav-item active">
-            <a class="nav-link" href="{% url 'home' %}">home <span class="sr-only">(current)</span></a>
+            <a class="nav-link" href="{% url 'accounts:home' %}">home <span class="sr-only">(current)</span></a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="#">about</a>
           </li>
           <li class="nav-item">
             {% if user.is_authenticated %}
-            <a class="nav-link" href="{% url 'logout' %}">logout</a>
+            <a class="nav-link" href="{% url 'accounts:logout' %}">logout</a>
             {% else %}
-            <a class="nav-link" href="{% url 'login' %}">login</a>
+            <a class="nav-link" href="{% url 'accounts:login' %}">login</a>
             {% endif %}
 
           </li>

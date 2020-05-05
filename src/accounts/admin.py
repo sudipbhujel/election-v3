@@ -6,6 +6,15 @@ from django.utils.translation import ugettext_lazy as _
 
 from accounts.forms import UserChangeForm, UserCreationForm
 from accounts.models import User, UserFaceImage
+from election.models import ElectionForm
+
+
+class InlineElectionForm(admin.StackedInline):
+    model = ElectionForm
+
+
+class InlineFaceImage(admin.StackedInline):
+    model = UserFaceImage
 
 
 class CustomUserAdmin(UserAdmin):
@@ -14,15 +23,12 @@ class CustomUserAdmin(UserAdmin):
     # The fields to be used in displaying the User model.
     # These override the definitions on the base UserAdmin
     # that reference the removed 'username' field
+    inlines = [InlineFaceImage, InlineElectionForm]
     fieldsets = (
         (None, {'fields': ('citizenship_number', 'email', 'password')}),
-        (_('Personal info'), {'fields': ('first_name', 'middle_name', 'last_name', 
-                                        'father_name', 'mother_name', 'dob', 'gender', 
-                                        'citizenship_issued_district', 'profile_image', 
-                                        'citizenship')}),
-        (_('Address info'), {'fields': ('state', 'zone', 'district', 'muncipality', 
-                                        'ward_number', 'tole')}),
-        (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser', 'is_voter',
+        (_('Personal info'), {'fields': ('first_name', 'middle_name', 'last_name',
+                                         'avatar',)}),
+        (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser', 'is_form_filled', 'is_voter',
                                        'is_candidate', 'is_verified_candidate',
                                        'user_permissions')}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
@@ -37,12 +43,16 @@ class CustomUserAdmin(UserAdmin):
     form = UserChangeForm
     add_form = UserCreationForm
     list_display = ('citizenship_number', 'email',
-                    'first_name', 'last_name', 'is_staff')
+                    'full_name', 'is_staff', 'is_form_filled', 'is_voter', 'is_candidate', 'is_verified_candidate',)
     list_display_links = ('citizenship_number', 'email',)
     search_fields = ('citizenship_number', 'email', 'first_name', 'last_name')
+    list_filter = ('is_staff', 'is_active', 'is_superuser', 'is_form_filled', 'is_voter', )
     ordering = ('citizenship_number',)
+
+    def full_name(self, obj):
+        return '{}'.format(obj.get_full_name)
 
 
 admin.site.register(User, CustomUserAdmin)
-admin.site.register(UserFaceImage)
+# admin.site.register(UserFaceImage)
 admin.site.unregister(Group)
