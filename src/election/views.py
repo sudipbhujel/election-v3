@@ -18,6 +18,10 @@ def home(request):
 
 @login_required
 def election_fill_form_view(request, citizenship_number):
+    if request.user.citizenship_number!=citizenship_number:
+        messages.success(request, 'You can\'t fill other\'s form')
+        return redirect('election:home')
+
     if request.method == 'POST':
         form = ElectionFillForm(request.POST, request.FILES)
 
