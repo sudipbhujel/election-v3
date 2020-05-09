@@ -2,6 +2,8 @@ from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.sites.shortcuts import get_current_site
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
@@ -11,9 +13,10 @@ from django.views import View
 
 from accounts.authenticate import FaceIdAuthBackend
 from accounts.forms import (AuthenticationForm, PasswordChangeForm,
+                            PasswordResetRequestForm, SetPasswordForm,
                             UserLoginForm, UserSignupForm)
 from accounts.models import User
-from accounts.tokens import account_activation_token
+from accounts.tokens import account_activation_token, password_reset_token
 from accounts.utils import prepare_image
 
 
@@ -118,13 +121,12 @@ def logout_view(request):
 def password_change_view(request):
     if request.method == 'POST':
         form = PasswordChangeForm(data=request.POST, user=request.user)
-        
+
         if form.is_valid():
             form.save()
-            print(form)
             messages.success(request, 'You have changed your password...')
             return redirect('accounts:home')
-    
+
     else:
         form = PasswordChangeForm(user=request.user)
 
@@ -140,12 +142,84 @@ def password_change_view(request):
 #         form = self.form_class(user=request.user)
 #         context = {'form': form}
 #         return render(request, self.template_name, context)
-    
+
 #     def post(self, request, *args, **kwargs):
 #         form = self.form_class(data=request.POST, user=request.user)
-        
+
 #         if form.is_valid():
 #             messages.success(request, 'You have Changed Your Password...')
 #             return redirect('home')
 #         context = {'form': form}
 #         return render(request, self.template_name, context)
+
+
+# Password Reset View
+class ResetPasswordRequestView(View):
+    template_name = 'accounts/password_reset.html'
+    form_class = PasswordResetRequestForm
+
+    def get(self, request, *args, **kwargs):
+        form = self.form_class()
+        context = {'form': form}
+        return render(request, self.template_name, context)
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+
+        if form.is_valid():
+            email = form.cleaned_data['email']
+
+        # if self.validate_email_address(email):
+            associated_users = User.objects.filter(email=email)
+            if associated_users.exists():
+                user = associated_users.first()
+
+                current_site = get_current_site(request)
+
+                subject = 'Reset your password'
+                message = message = render_to_string('pwd_reset_email.html', {
+                    'user': user,
+                    'protocol': 'http',
+                    'domain': current_site.domain,
+                    'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                    'token': password_reset_token.make_token(user),
+                })
+                to_email = email
+                user.email_user(subject, message)
+
+                return HttpResponse('Password reset link is sent to your email.')
+        context = {'form': form}
+        return render(request, self.template_name, context)
+
+
+# password reset confirm view
+class PasswordResetConfirmView(View):
+    template_name = 'accounts/password_reset_confirm.html'
+    form_class = SetPasswordForm
+
+    def get(self, request, uidb64, token, *args, **kwargs):
+        try:
+            uid = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+        except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+            user = None
+        if user is not None and password_reset_token.check_token(user, token):
+            form = self.form_class()
+            context = {'form': form}
+            return render(request, self.template_name, context)
+        else:
+            return HttpResponse('Reset link is invalid!')
+
+    def post(self, request, uidb64=None, token=None, *args, **kwargs):
+        form = self.form_class(request.POST)
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+        if form.is_valid():
+            new_password = form.cleaned_data.get('new_password2')
+            user.set_password(new_password)
+            user.save()
+            messages.success(
+                request, 'Password has been reset.')
+            return HttpResponse('Your password is reset successfully, Now you can login your account.')
+        context = {'form': form}
+        return render(request, self.template_name, context)

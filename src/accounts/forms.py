@@ -120,7 +120,51 @@ class AuthenticationForm(AuthenticationForm):
     image = forms.CharField(widget=forms.HiddenInput())
 
 # Password change form
+
+
 class PasswordChangeForm(PasswordChangeForm):
     class Meta:
         model = User
         fields = ('old_password', 'new_password1', 'new_password2')
+
+    def clean(self, *args, **kwargs):
+        new_password1 = self.cleaned_data.get('new_password1')
+        new_password2 = self.cleaned_data.get('new_password2')
+
+        if new_password1 and new_password2 and new_password1 != new_password2:
+            raise forms.ValidationError("Passwords don't match")
+
+        return super(PasswordChangeForm, self).clean(*args, **kwargs)
+
+
+# Password reset request form
+class PasswordResetRequestForm(forms.Form):
+    email = forms.EmailField(max_length=254)
+
+    def clean(self, *args, **kwargs):
+        email = self.cleaned_data.get('email')
+
+        user_qs = User.objects.filter(email=email)
+
+        if not user_qs.exists():
+            raise forms.ValidationError(
+                "User doesn't exist with provided email!")
+
+        return super(PasswordResetRequestForm, self).clean(*args, **kwargs)
+
+
+# class set password form
+class SetPasswordForm(forms.Form):
+    """
+    A form that lets a user change set their password without entering the old
+    password
+    """
+    new_password1 = forms.CharField(widget=forms.PasswordInput)
+    new_password2 = forms.CharField(widget=forms.PasswordInput)
+
+    def clean_new_password2(self):
+        password1 = self.cleaned_data.get('new_password1')
+        password2 = self.cleaned_data.get('new_password2')
+        if password1 and password2 and password1 != password2:
+            raise forms.ValidationError('Password not match!')
+        return password2
