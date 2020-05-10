@@ -5,7 +5,7 @@ from django.contrib.auth.models import Group
 from django.utils.translation import ugettext_lazy as _
 
 from accounts.forms import UserChangeForm, UserCreationForm
-from accounts.models import User, UserFaceImage
+from accounts.models import Profile, User, UserFaceImage
 from election.models import ElectionForm
 
 
@@ -69,6 +69,16 @@ class CustomUserAdmin(UserAdmin):
         return '{}'.format(obj.get_full_name)
 
 
+class ProfileAdmin(admin.ModelAdmin):
+    model = Profile
+
+    list_display = ('user', 'full_name')
+
+    def full_name(self, obj):
+        return '{}'.format(obj.user.get_full_name)
+
+
 admin.site.register(User, CustomUserAdmin)
 # admin.site.register(UserFaceImage)
+admin.site.register(Profile, ProfileAdmin)
 admin.site.unregister(Group)
