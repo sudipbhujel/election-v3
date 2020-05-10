@@ -4,13 +4,12 @@ import time
 from django.core.files.storage import FileSystemStorage
 from django.db import models
 from django.db.models.signals import post_save
+from django.utils import timezone
 from django.utils.translation import ugettext as _
 
-from accounts.models import User
+from accounts.models import User, upload_storage
 from base.settings import BASE_DIR
 from election.choices import DISTRICT_CHOICES, GENDER_CHOICES, PROVINCE_CHOICES
-
-from accounts.models import upload_storage
 
 
 def citizenship_location(instance, filename):
@@ -46,6 +45,12 @@ class ElectionForm(models.Model):
     muncipality = models.CharField(_('muncipality'), max_length=30, blank=True)
     ward = models.IntegerField(_('ward number'), blank=True, null=True)
     tole = models.CharField(_('tole'), max_length=30, blank=True)
+
+    # Dates
+    date_submitted = models.DateTimeField(
+        _('submission date'), blank=True, null=True, default=timezone.now)
+    date_edited = models.DateTimeField(
+        _('edit date'), blank=True, null=True, auto_now=True)
 
     class Meta:
         verbose_name = _('election form')
