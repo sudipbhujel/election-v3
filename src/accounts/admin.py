@@ -12,6 +12,16 @@ from election.models import ElectionForm
 class InlineElectionForm(admin.StackedInline):
     model = ElectionForm
 
+    fieldsets = (
+        (None, {'fields': ('voter', )}),
+        (None, {'fields': ('father_name', 'mother_name', 'dob', 'gender',
+                           'citizenship_issued_district',
+                           'citizenship')}),
+        (None, {
+         'fields': (('province', 'district'), ('muncipality', 'ward'), 'tole')}),
+    )
+    radio_fields = {'gender': admin.HORIZONTAL}
+
 
 class InlineFaceImage(admin.StackedInline):
     model = UserFaceImage
@@ -26,12 +36,17 @@ class CustomUserAdmin(UserAdmin):
     inlines = [InlineFaceImage, InlineElectionForm]
     fieldsets = (
         (None, {'fields': ('citizenship_number', 'email', 'password')}),
-        (_('Personal info'), {'fields': ('first_name', 'middle_name', 'last_name',
+        (_('Personal info'), {'fields': (('first_name', 'middle_name'), 'last_name',
                                          'avatar',)}),
-        (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser', 'is_form_filled', 'is_voter',
-                                       'is_candidate', 'is_verified_candidate',
-                                       'user_permissions')}),
-        (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
+        (_('Permissions'), {'classes': ('extrapretty'),
+                            'fields': (('is_active', 'is_staff'), 'is_superuser', 'is_form_filled',
+                                       ('is_voter', 'is_candidate',
+                                        'is_verified_candidate'),
+                                       )}),
+        (_('User permissions'), {'classes': ('collapse',),
+                                 'fields': ('user_permissions', )}),
+        (_('Important dates'), {'classes': ('collapse', 'extrapretty'),
+                                'fields': ('last_login', 'date_joined')}),
     )
     # Used for creating user
     add_fieldsets = (
@@ -46,7 +61,8 @@ class CustomUserAdmin(UserAdmin):
                     'full_name', 'is_staff', 'is_form_filled', 'is_voter', 'is_candidate', 'is_verified_candidate',)
     list_display_links = ('citizenship_number', 'email',)
     search_fields = ('citizenship_number', 'email', 'first_name', 'last_name')
-    list_filter = ('is_staff', 'is_active', 'is_superuser', 'is_form_filled', 'is_voter', )
+    list_filter = ('is_staff', 'is_active', 'is_superuser',
+                   'is_form_filled', 'is_voter', )
     ordering = ('citizenship_number',)
 
     def full_name(self, obj):
