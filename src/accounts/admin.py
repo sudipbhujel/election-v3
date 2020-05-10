@@ -36,8 +36,8 @@ class CustomUserAdmin(UserAdmin):
     inlines = [InlineFaceImage, InlineElectionForm]
     fieldsets = (
         (None, {'fields': ('citizenship_number', 'email', 'password')}),
-        (_('Personal info'), {'fields': (('first_name', 'middle_name'), 'last_name',
-                                         'avatar',)}),
+        (_('Personal info'), {
+         'fields': (('first_name', 'middle_name'), 'last_name',)}),
         (_('Permissions'), {'classes': ('extrapretty'),
                             'fields': (('is_active', 'is_staff'), 'is_superuser', 'is_form_filled',
                                        ('is_voter', 'is_candidate',
