@@ -5,6 +5,7 @@ from election.models import ElectionForm
 
 
 class ElectionFormAdmin(admin.ModelAdmin):
+    date_hierarchy = ('date_submitted')
     readonly_fields = ('date_submitted', 'date_edited', )
     fieldsets = (
         (None, {'fields': ('voter', )}),
