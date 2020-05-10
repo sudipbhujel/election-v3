@@ -86,9 +86,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_voter = models.BooleanField(_('voter'), default=False,
                                    help_text=_('Designates whether the user can vote.'))
     is_candidate = models.BooleanField(_('candidate'), default=False,
-                                       help_text=_(''))
+                                       help_text=_('Designates whether the user is candidate.'))
     is_verified_candidate = models.BooleanField(_('verified candidate'), default=False,
-                                                help_text=_(''))
+                                                help_text=_('Designates whether the user is verified candidate'))
 
     # Election form
     is_form_filled = models.BooleanField(_('form filled'), default=False,
