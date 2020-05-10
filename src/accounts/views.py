@@ -85,6 +85,9 @@ class LoginView(View):
     form_class = UserLoginForm
 
     def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            messages.success(request, 'You are already logged in!')
+            return redirect('accounts:home')
         form = self.form_class()
         context = {'form': form}
         return render(request, self.template_name, context)
