@@ -5,6 +5,8 @@ from django.db.models import Q
 
 from .models import User, UserFaceImage
 from .utils import base64_file
+from accounts.models import Profile
+from PIL import Image
 
 
 # Admin form
@@ -168,3 +170,34 @@ class SetPasswordForm(forms.Form):
         if password1 and password2 and password1 != password2:
             raise forms.ValidationError('Password not match!')
         return password2
+
+
+class PhotoForm(forms.ModelForm):
+    x = forms.FloatField(widget=forms.HiddenInput())
+    y = forms.FloatField(widget=forms.HiddenInput())
+    width = forms.FloatField(widget=forms.HiddenInput())
+    height = forms.FloatField(widget=forms.HiddenInput())
+
+    class Meta:
+        model = Profile
+        fields = ('avatar', 'x', 'y', 'width', 'height', )
+        widgets = {
+            'avatar': forms.FileInput(attrs={
+                'accept': 'image/*'  # this is not an actual validation! don't rely on that!
+            })
+        }
+
+    def save(self):
+        photo = super(PhotoForm, self).save()
+
+        x = self.cleaned_data.get('x')
+        y = self.cleaned_data.get('y')
+        w = self.cleaned_data.get('width')
+        h = self.cleaned_data.get('height')
+
+        image = Image.open(photo.avatar)
+        cropped_image = image.crop((x, y, w+x, h+y))
+        resized_image = cropped_image.resize((200, 200), Image.ANTIALIAS)
+        resized_image.save(photo.avatar.path)
+
+        return photo

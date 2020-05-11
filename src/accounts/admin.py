@@ -72,10 +72,10 @@ class CustomUserAdmin(UserAdmin):
 class ProfileAdmin(admin.ModelAdmin):
     model = Profile
 
-    list_display = ('user', 'full_name')
+    # list_display = ('full_name', )
 
-    def full_name(self, obj):
-        return '{}'.format(obj.user.get_full_name)
+    # def full_name(self, obj):
+    #     return '{}'.format(obj.user.get_full_name)
 
 
 admin.site.register(User, CustomUserAdmin)

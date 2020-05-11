@@ -12,18 +12,24 @@ from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.views import View
 
 from accounts.authenticate import FaceIdAuthBackend
-from accounts.forms import (AuthenticationForm, PasswordChangeForm,
-                            PasswordResetRequestForm, SetPasswordForm,
-                            UserLoginForm, UserSignupForm)
-from accounts.models import User
+from accounts.forms import AuthenticationForm, PasswordChangeForm, PasswordResetRequestForm, PhotoForm, SetPasswordForm, UserLoginForm, UserSignupForm
+from accounts.models import Profile, User
 from accounts.tokens import account_activation_token, password_reset_token
 from accounts.utils import prepare_image
 
 
 @login_required
 def home(request):
-    context = {}
-    return render(request, 'accounts/home.html', context)
+    photos = Profile.objects.all()
+    if request.method == 'POST':
+        form = PhotoForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('accounts:home')
+    else:
+        form = PhotoForm()
+    return render(request, 'accounts/home.html', {'form': form, 'photos': photos})
+
 
 
 class SignupView(View):
@@ -226,3 +232,16 @@ class PasswordResetConfirmView(View):
             return HttpResponse('Your password is reset successfully, Now you can login your account.')
         context = {'form': form}
         return render(request, self.template_name, context)
+
+
+@login_required
+def photo_list(request, citizenship_number):
+    photos = Profile.objects.all()
+    if request.method == 'POST':
+        form = PhotoForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('accounts:home')
+    else:
+        form = PhotoForm()
+    return render(request, 'accounts/home.html', {'form': form, 'photos': photos})

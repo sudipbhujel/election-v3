@@ -53,7 +53,7 @@ def pp_location(instance, filename):
     """
     timestr = time.strftime("%Y%m%d-%H%M%S")
     name, extension = os.path.splitext(filename)
-    return os.path.join('uploads', str(instance.user.citizenship_number), 'avatar', timestr + extension)
+    return os.path.join('uploads', str('321'), 'avatar', timestr + extension)
 
 
 # Custom User
@@ -133,13 +133,20 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 # Profile
 class Profile(models.Model):
-    user = models.OneToOneField(
-        User, on_delete=models.CASCADE, verbose_name=_('citizenship number'))
+    # user = models.OneToOneField(
+    #     User, on_delete=models.CASCADE, verbose_name=_('citizenship number'))
     avatar = models.ImageField(
-        _('profile picture'), upload_to=pp_location, storage=upload_storage, blank=True, help_text=_('Profile picture'))
+        _('profile picture'), upload_to=pp_location, storage=upload_storage, blank=True, 
+        help_text=_('Profile picture'))
+    description = models.CharField(max_length=255, blank=True)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return str(self.user.citizenship_number)
+    class Meta:
+        verbose_name = 'profile'
+        verbose_name_plural = 'profiles'
+
+    # def __str__(self):
+    #     return str(self.user.citizenship_number)
 
 
 # UserFaceImage

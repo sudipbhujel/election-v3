@@ -149,3 +149,40 @@ label {
     color: #ADAEAD;
     font-size: 18px;
 }
+
+
+/* Image crop */
+.modal-dialog{
+    position: relative;
+    display: table; /* This is important */ 
+    overflow-y: auto;    
+    overflow-x: auto;
+    width: auto;
+    min-width: 300px;   
+}
+
+.btn-default{
+    border: 1px solid #81888F;
+}
+
+.btn-default:hover{
+    background-color: #E6E6E6;
+}
+
+.modal-footer{
+    justify-content: left;
+}
+
+._modal-footer{
+    border-top: 1px solid rgb(224, 224, 224);
+    padding: 16px;
+}
+
+.btn-crop-submit{
+    background-color: #198269;
+}
+
+.btn-crop-submit:hover{
+    background-color: #198269;
+    color: #212529;
+}
