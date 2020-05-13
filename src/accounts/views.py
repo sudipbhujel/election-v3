@@ -22,6 +22,9 @@ from accounts.utils import prepare_image
 def home(request):
     photo = Profile.objects.filter(user=request.user)
     if request.method == 'POST':
+        if photo.exists():
+            messages.success(request, 'You have already submitted profile picture!')
+            return redirect('accounts:home')
         form = PhotoForm(request.POST, request.FILES)
         if form.is_valid():
             profile = form.save(commit=False)
