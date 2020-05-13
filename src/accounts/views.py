@@ -20,15 +20,17 @@ from accounts.utils import prepare_image
 
 @login_required
 def home(request):
-    photos = Profile.objects.all()
+    photo = Profile.objects.filter(user=request.user)
     if request.method == 'POST':
         form = PhotoForm(request.POST, request.FILES)
         if form.is_valid():
+            profile = form.save(commit=False)
+            profile.user = request.user
             form.save()
             return redirect('accounts:home')
     else:
         form = PhotoForm()
-    return render(request, 'accounts/home.html', {'form': form, 'photos': photos})
+    return render(request, 'accounts/home.html', {'form': form, 'photo': photo.first()})
 
 
 

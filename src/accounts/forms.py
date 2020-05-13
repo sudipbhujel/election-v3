@@ -181,23 +181,20 @@ class PhotoForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ('avatar', 'x', 'y', 'width', 'height', )
-        widgets = {
-            'avatar': forms.FileInput(attrs={
-                'accept': 'image/*'  # this is not an actual validation! don't rely on that!
-            })
-        }
 
-    def save(self):
-        photo = super(PhotoForm, self).save()
+    def save(self, commit=True):
+        photo = super(PhotoForm, self).save(commit=False)
 
-        x = self.cleaned_data.get('x')
-        y = self.cleaned_data.get('y')
-        w = self.cleaned_data.get('width')
-        h = self.cleaned_data.get('height')
+        if commit:
+            photo = super(PhotoForm, self).save()
+            x = self.cleaned_data.get('x')
+            y = self.cleaned_data.get('y')
+            w = self.cleaned_data.get('width')
+            h = self.cleaned_data.get('height')
 
-        image = Image.open(photo.avatar)
-        cropped_image = image.crop((x, y, w+x, h+y))
-        resized_image = cropped_image.resize((200, 200), Image.ANTIALIAS)
-        resized_image.save(photo.avatar.path)
+            image = Image.open(photo.avatar)
+            cropped_image = image.crop((x, y, w+x, h+y))
+            resized_image = cropped_image.resize((200, 200), Image.ANTIALIAS)
+            resized_image.save(photo.avatar.path)
 
         return photo

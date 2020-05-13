@@ -124,11 +124,12 @@
 
 <!-- CONTAINER TO DISPLAY THE CROPPED IMAGES -->
 <div class="row" style="margin-top: 20px">
-    {% for photo in photos %}
+    {% comment %} {% for photo in photos %} {% endcomment %}
     <div class="col-sm-4 col-md-3">
         <img src="{{ photo.avatar.url }}" class="thumbnail">
+        <p>citizenship_number: {{photo.user}}</p>
     </div>
-    {% endfor %}
+    {% comment %} {% endfor %} {% endcomment %}
 
     {% comment %} <div class="col-sm-4 col-md-3">
         <img src="{{ profile.avatar.url }}" class="thumbnail">
