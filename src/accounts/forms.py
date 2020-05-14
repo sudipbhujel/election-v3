@@ -103,7 +103,7 @@ class UserLoginForm(forms.Form):
         password = self.cleaned_data.get('password')
 
         user_qs = User.objects.filter(
-            Q(citizenship_number__iexact=citizenship_number)).distinct()
+            Q(citizenship_number=citizenship_number)).distinct()
 
         if not user_qs.exists() and user_qs.count() != 1:
             raise forms.ValidationError(
