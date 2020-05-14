@@ -6,6 +6,8 @@ venv/
 
 src/db.sqlite3
 src/base/__pycache__
+src/base/secrets.py
+
 src/accounts/__pycache__
 src/accounts/migrations
 src/accounts/uploads
