@@ -15,3 +15,6 @@ src/accounts/uploads
 src/election/__pycache__
 src/election/migrations
 src/election/uploads
+
+election/node_modules
+election/.next
