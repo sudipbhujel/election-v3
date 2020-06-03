@@ -1,56 +1,83 @@
 import React from 'react';
 import election from '../ethereum/election';
 import Layout from '../components/Layout';
-import { Card } from 'semantic-ui-react';
+import { Button, Card, Message } from 'semantic-ui-react';
 import web3 from '../ethereum/web3';
+import { totalCandidate, totalVoter, voteDropped } from '../ethereum/stats'
 
 import { Link } from '../routes';
 
 class ElectionIndex extends React.Component {
+    state = {
+        errorMessage: '',
+        loading: false
+    }
     static async getInitialProps() {
         let candidates = [];
         const manager = await election.methods.manager().call();
-        const accounts = await web3.eth.getAccounts();
         const totalCandidate = await election.methods.totalCandidate().call();
         const totalVoter = await election.methods.totalVoter().call();
+        const voteDropped = await election.methods.voteDropped().call();
+
         for (let i = 0; i < parseInt(totalCandidate); i++) {
             const candidate = await election.methods.candidates(i).call();
             const candidateAddress = candidate.candidateAddress;
             candidates.push(candidateAddress);
         }
 
-        return { accounts, manager, totalCandidate, totalVoter, candidates };
+        return { manager, totalCandidate, totalVoter, candidates, voteDropped };
+    }
+
+    onVote = async (event) => {
+        event.preventDefault();
+        this.setState({ errorMessage: '', loading: true });
+
+        const index = event.target.value - 1;
+        try {
+            const accounts = await web3.eth.getAccounts();
+            await election.methods.doVote(parseInt(index)).send({
+                from: accounts[0],
+                gas: '1000000'
+            });
+            console.log('voted to', index);
+            // Router.replaceRoute(`/campaigns/${this.props.address}`);
+        } catch (error) {
+            this.setState(
+                { errorMessage: error.message }
+            );
+        };
+
+        this.setState(
+            { value: '', loading: false }
+        );
     }
 
     renderCandidates() {
-        const items = this.props.candidates.map(address => {
+        const items = this.props.candidates.map((address, index) => {
+            index++;
             return {
                 header: address,
-                meta: 'Candidate',
-                fluid: true
+                meta: `Candidate ${index}`,
+                // fluid: true,
+                extra: <Button key={index} onClick={this.onVote} value={index} loading={this.state.loading} inverted primary>Vote</Button>,
+                style: { overflowWrap: 'break-word' }
             }
         });
         return <Card.Group items={items} />
     }
 
+    renderMessage(){
+        if (this.state.errorMessage.length != 0){
+            return <Message error header="Oops" content={this.state.errorMessage}/>
+        }
+    }
+
     render() {
-        console.log(this.props.accounts);
         return (
             <Layout>
-                <h2>Manager: {this.props.manager}</h2>
-                <h2>Account: {this.props.accounts[0]}</h2>
-
-                <h3>Total Candidates: {this.props.totalCandidate}</h3>
-                <h3>Total Voter: {this.props.totalVoter}</h3>
+                {this.renderMessage()}
+                <h3>Candidates</h3>
                 {this.renderCandidates()}
-
-                <Link route={`/candidates/new`}>
-                    <a>New Candidate</a>
-                </Link>
-                <Link route={`/voters/new`}>
-                    <a>New Voter</a>
-                </Link>
-
             </Layout>
         );
     };
