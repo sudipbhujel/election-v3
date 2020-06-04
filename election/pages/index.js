@@ -21,8 +21,9 @@ class ElectionIndex extends React.Component {
 
         for (let i = 0; i < parseInt(totalCandidate); i++) {
             const candidate = await election.methods.candidates(i).call();
-            const candidateAddress = candidate.candidateAddress;
-            candidates.push(candidateAddress);
+            const name = candidate.name;
+            const address = candidate.candidateAddress;
+            candidates.push({address, name});
         }
 
         return { manager, totalCandidate, totalVoter, candidates, voteDropped };
@@ -53,11 +54,11 @@ class ElectionIndex extends React.Component {
     }
 
     renderCandidates() {
-        const items = this.props.candidates.map((address, index) => {
+        const items = this.props.candidates.map((candidate, index) => {
             index++;
             return {
-                header: address,
-                meta: `Candidate ${index}`,
+                header: candidate.name,
+                meta: candidate.address,
                 // fluid: true,
                 extra: <Button key={index} onClick={this.onVote} value={index} loading={this.state.loading} inverted primary>Vote</Button>,
                 style: { overflowWrap: 'break-word' }

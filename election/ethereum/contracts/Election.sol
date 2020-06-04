@@ -19,8 +19,9 @@ contract Election {
 
     struct Candidate {
         address candidateAddress;
-        uint256 totalVoteCount;
         bool isCandidate;
+        string name;
+        uint256 totalVoteCount;
     }
 
     mapping(address => Voter) public voters;
@@ -79,12 +80,13 @@ contract Election {
         emit voterAdded(_voterAddress);
     }
 
-    function addCandidate(address _candidateAddress)
+    function addCandidate(address _candidateAddress, string memory _name)
         public
         inState(State.Created)
         onlyManager
     {
         candidates[totalCandidate] = Candidate({
+            name: _name,
             candidateAddress: _candidateAddress,
             totalVoteCount: 0,
             isCandidate: true
@@ -130,6 +132,7 @@ contract Election {
         returns (uint256)
     {
         state = State.Ended;
+        emit voteEnded();
         return voteDropped;
     }
 }

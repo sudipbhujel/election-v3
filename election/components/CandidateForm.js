@@ -5,7 +5,8 @@ import web3 from '../ethereum/web3';
 
 class CandidateForm extends React.Component {
     state = {
-        value: '',
+        address: '',
+        name: '',
         errorMessage: '',
         loading: false
     };
@@ -17,7 +18,7 @@ class CandidateForm extends React.Component {
 
         try {
             const accounts = await web3.eth.getAccounts();
-            await election.methods.addCandidate(this.state.value).send({
+            await election.methods.addCandidate(this.state.address, this.state.name).send({
                 from: accounts[0],
                 gas: '1000000'
             });
@@ -29,7 +30,7 @@ class CandidateForm extends React.Component {
         };
 
         this.setState(
-            { value: '', loading: false }
+            { address: '', name: '', loading: false }
         );
     }
 
@@ -37,16 +38,23 @@ class CandidateForm extends React.Component {
         return (
             <Form onSubmit={this.onSubmit} error={!!this.state.errorMessage}>
                 <Form.Field>
+                    <label>Candidate Name</label>
+                    <Input
+                        value={this.state.name}
+                        onChange={event => this.setState({ name: event.target.value })}
+                        label="name"
+                        labelPosition="right"
+                    />
                     <label>Candidate Address</label>
                     <Input
-                        value={this.state.value}
-                        onChange={event => this.setState({ value: event.target.value })}
+                        value={this.state.address}
+                        onChange={event => this.setState({ address: event.target.value })}
                         label="address"
                         labelPosition="right"
                     />
                 </Form.Field>
                 <Message error header="Oops!" content={this.state.errorMessage} />
-                <Button primary content='Add Candidate' icon='add' labelPosition='right' loading={this.state.loading}/>
+                <Button primary content='Add Candidate' icon='add' labelPosition='right' loading={this.state.loading} />
             </Form>
         )
     }

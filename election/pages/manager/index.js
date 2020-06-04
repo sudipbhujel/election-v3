@@ -24,9 +24,10 @@ class Manager extends React.Component {
 
         for (let i = 0; i < parseInt(totalCandidate); i++) {
             const candidate = await election.methods.candidates(i).call();
-            const candidateAddress = candidate.candidateAddress;
+            const name = candidate.name;
+            const address = candidate.candidateAddress;
             const totalVoteCount = candidate.totalVoteCount;
-            candidates.push({ candidateAddress, totalVoteCount });
+            candidates.push({ address, name, totalVoteCount });
         }
 
         return { accounts, manager, totalCandidate, totalVoter, candidates, voteDropped };
@@ -36,8 +37,8 @@ class Manager extends React.Component {
         const items = this.props.candidates.map((candidate, index) => {
             index++;
             return {
-                header: candidate.candidateAddress,
-                meta: `Candidate ${index}`,
+                header: candidate.name,
+                meta: candidate.address,
                 description: `Total Vote: ${candidate.totalVoteCount}`,
                 fluid: true,
                 style: { overflowWrap: 'break-word' }
